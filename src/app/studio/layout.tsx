@@ -19,7 +19,7 @@ export default async function StudioLayout({ children }: Readonly<{ children: Re
   try {
     actor = await requireStudioActor();
   } catch {
-    redirect("/studio/sign-in");
+    redirect("/studio-login");
   }
 
   return (
