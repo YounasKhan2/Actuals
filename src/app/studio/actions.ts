@@ -60,3 +60,44 @@ export async function rejectEvidenceAction(form: FormData) {
   await commands.rejectEvidence(actor, String(form.get("evidenceId") ?? ""));
   revalidatePath("/studio/evidence");
 }
+
+export async function createArticleAction(form: FormData) {
+  const actor = await requireStudioActor();
+  await commands.createArticle(actor, {
+    slug: String(form.get("slug") ?? ""),
+    kind: String(form.get("kind") ?? "overview"),
+    revision: {
+      title: String(form.get("title") ?? ""),
+      dek: String(form.get("dek") ?? "") || null,
+      blocks: [],
+    },
+  });
+  revalidatePath("/studio/articles");
+}
+
+export async function addRevisionAction(form: FormData) {
+  const actor = await requireStudioActor();
+  const articleId = String(form.get("articleId") ?? "");
+  const markdown = String(form.get("markdown") ?? "").trim();
+  await commands.addRevision(actor, articleId, {
+    title: String(form.get("title") ?? ""),
+    dek: String(form.get("dek") ?? "") || null,
+    changeNote: String(form.get("changeNote") ?? "") || null,
+    blocks: markdown ? [{ type: "prose", payload: { markdown } }] : [],
+  });
+  revalidatePath(`/studio/articles/${articleId}`);
+}
+
+export async function submitArticleAction(form: FormData) {
+  const actor = await requireStudioActor();
+  const articleId = String(form.get("articleId") ?? "");
+  await commands.submitForReview(actor, articleId);
+  revalidatePath(`/studio/articles/${articleId}`);
+}
+
+export async function publishArticleAction(form: FormData) {
+  const actor = await requireStudioActor();
+  const articleId = String(form.get("articleId") ?? "");
+  await commands.publishRevision(actor, articleId, String(form.get("revisionId") ?? ""));
+  revalidatePath(`/studio/articles/${articleId}`);
+}
