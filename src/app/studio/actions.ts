@@ -83,7 +83,7 @@ export async function addRevisionAction(form: FormData) {
     title: String(form.get("title") ?? ""),
     dek: String(form.get("dek") ?? "") || null,
     changeNote: String(form.get("changeNote") ?? "") || null,
-    blocks: markdown ? [{ type: "prose", payload: { markdown } }] : [],
+    blocks,
   });
   revalidatePath(`/studio/articles/${articleId}`);
 }
