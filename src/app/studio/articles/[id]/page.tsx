@@ -19,6 +19,10 @@ export default async function ArticleWorkspacePage({ params }: { params: Promise
       <input type="hidden" name="articleId" value={article.id} />
       <input name="title" defaultValue={latest?.title ?? ""} placeholder="Title" required />
       <input name="dek" defaultValue={latest?.dek ?? ""} placeholder="Deck" />
+      <input name="seoTitle" defaultValue={latest?.seoTitle ?? ""} placeholder="SEO title (max 70)" />
+      <input name="seoDescription" defaultValue={latest?.seoDescription ?? ""} placeholder="SEO description (max 180)" />
+      <label className="studio-field"><span>Last researched</span><input type="date" name="lastResearchedAt" defaultValue={latest?.lastResearchedAt?.toISOString().slice(0,10) ?? ""} /></label>
+      <label className="studio-field"><span>Facts verified</span><input type="date" name="factsVerifiedAt" defaultValue={latest?.factsVerifiedAt?.toISOString().slice(0,10) ?? ""} /></label>
       <BlockComposer initialBlocks={blocks} researchOptions={composerOptions} />
       <input name="changeNote" placeholder="What changed in this revision?" />
       <button>Create new revision</button>
