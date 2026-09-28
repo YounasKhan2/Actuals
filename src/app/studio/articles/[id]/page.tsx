@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { StudioQueryService } from "@/application/studio-query-service";
-import { addRevisionAction, publishArticleAction, submitArticleAction } from "../../actions";
+import { addRevisionAction, publishArticleAction, submitArticleAction } from "../../actions";\nimport { BlockComposer } from "@/components/studio/block-composer";
 
 export default async function ArticleWorkspacePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,7 +13,7 @@ export default async function ArticleWorkspacePage({ params }: { params: Promise
       <input type="hidden" name="articleId" value={article.id} />
       <input name="title" defaultValue={latest?.title ?? ""} placeholder="Title" required />
       <input name="dek" defaultValue={latest?.dek ?? ""} placeholder="Deck" />
-      <textarea name="markdown" placeholder="Prose block for the next revision" />
+      <BlockComposer />
       <input name="changeNote" placeholder="What changed in this revision?" />
       <button>Create new revision</button>
     </form>
