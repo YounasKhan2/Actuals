@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PublicationBlocks } from "@/components/publication/blocks";
-import { loadPublishedArticle } from "@/publication/load-published-article";
+import { loadPublishedArticle } from "@/publication/load-published-article";\nimport { articlePath } from "@/publication/routes";
 
 export async function publishedMetadata(slug: string, kind: string): Promise<Metadata> {
   const result = await loadPublishedArticle(slug, kind);
