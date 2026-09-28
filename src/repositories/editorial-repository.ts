@@ -2,7 +2,7 @@ import { and, asc, count, desc, eq, inArray, max, sql } from "drizzle-orm";
 import type { ActualsDb } from "@/db";
 import {
   articleBlocks, articleRevisions, articles, evidence, evidenceProducts, evidenceThemes,
-  findingEvidence, findings, vendorFacts,
+  findingEvidence, findings, sources, vendorFacts,
 } from "@/db/schema";
 import { assertArticleTransition } from "@/domain/article-lifecycle";
 import type { CreateArticleInput, EvidenceInput } from "@/domain/contracts";
@@ -199,13 +199,16 @@ export class EditorialRepository {
       findingIds.length ? this.db.select().from(findings).where(inArray(findings.id, findingIds)) : Promise.resolve([]),
       factIds.length ? this.db.select().from(vendorFacts).where(inArray(vendorFacts.id, factIds)) : Promise.resolve([]),
     ]);
+    const sourceIds = [...new Set([...evidenceRefs.map((item) => item.sourceId), ...factRefs.map((item) => item.sourceId)])];
+    const sourceRefs = sourceIds.length ? await this.db.select().from(sources).where(inArray(sources.id, sourceIds)) : [];
+    const sourceMap = Object.fromEntries(sourceRefs.map((item) => [item.id, item]));
 
     return {
       article, revision, blocks,
       references: {
-        evidence: Object.fromEntries(evidenceRefs.map((item) => [item.id, item])),
+        evidence: Object.fromEntries(evidenceRefs.map((item) => [item.id, { ...item, source: sourceMap[item.sourceId] ?? null }])),
         finding: Object.fromEntries(findingRefs.map((item) => [item.id, item])),
-        verified_fact: Object.fromEntries(factRefs.map((item) => [item.id, item])),
+        verified_fact: Object.fromEntries(factRefs.map((item) => [item.id, { ...item, source: sourceMap[item.sourceId] ?? null }])),
       },
     };
   }
