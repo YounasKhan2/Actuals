@@ -2,7 +2,7 @@ import { and, asc, count, desc, eq, inArray, max, sql } from "drizzle-orm";
 import type { ActualsDb } from "@/db";
 import {
   articleBlocks, articleRevisions, articles, evidence, evidenceProducts, evidenceThemes,
-  findingEvidence, findings,
+  findingEvidence, findings, vendorFacts,
 } from "@/db/schema";
 import { assertArticleTransition } from "@/domain/article-lifecycle";
 import type { CreateArticleInput, EvidenceInput } from "@/domain/contracts";
@@ -130,6 +130,31 @@ export class EditorialRepository {
     if (!revision) return null;
     const blocks = await this.db.select().from(articleBlocks)
       .where(eq(articleBlocks.revisionId, revision.id)).orderBy(asc(articleBlocks.position));
-    return { article, revision, blocks };
+
+    const referenceIds = (type: string) => blocks
+      .filter((block) => block.type === type)
+      .map((block) => {
+        const payload = block.payload as Record<string, unknown>;
+        return typeof payload?.id === "string" ? payload.id : null;
+      })
+      .filter((id): id is string => Boolean(id));
+
+    const evidenceIds = referenceIds("evidence");
+    const findingIds = referenceIds("finding");
+    const factIds = referenceIds("verified_fact");
+    const [evidenceRefs, findingRefs, factRefs] = await Promise.all([
+      evidenceIds.length ? this.db.select().from(evidence).where(inArray(evidence.id, evidenceIds)) : Promise.resolve([]),
+      findingIds.length ? this.db.select().from(findings).where(inArray(findings.id, findingIds)) : Promise.resolve([]),
+      factIds.length ? this.db.select().from(vendorFacts).where(inArray(vendorFacts.id, factIds)) : Promise.resolve([]),
+    ]);
+
+    return {
+      article, revision, blocks,
+      references: {
+        evidence: Object.fromEntries(evidenceRefs.map((item) => [item.id, item])),
+        finding: Object.fromEntries(findingRefs.map((item) => [item.id, item])),
+        verified_fact: Object.fromEntries(factRefs.map((item) => [item.id, item])),
+      },
+    };
   }
 }
