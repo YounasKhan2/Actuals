@@ -1,0 +1,62 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { StudioCommandService } from "@/application/studio-command-service";
+import { requireStudioActor } from "@/lib/studio-session";
+
+const commands = new StudioCommandService();
+
+export async function createSourceAction(form: FormData) {
+  const actor = await requireStudioActor();
+  const publishedAt = String(form.get("publishedAt") ?? "").trim();
+  await commands.upsertSource(actor, {
+    url: String(form.get("url") ?? ""),
+    publisher: String(form.get("publisher") ?? "") || null,
+    type: String(form.get("type") ?? "other"),
+    ...(publishedAt ? { publishedAt } : {}),
+    lastVerifiedAt: new Date(),
+  });
+  revalidatePath("/studio/sources");
+}
+
+export async function createProductAction(form: FormData) {
+  const actor = await requireStudioActor();
+  await commands.createProduct(actor, {
+    slug: String(form.get("slug") ?? ""),
+    name: String(form.get("name") ?? ""),
+    websiteUrl: String(form.get("websiteUrl") ?? "") || null,
+    description: String(form.get("description") ?? "") || null,
+    isOpenSource: form.get("isOpenSource") === "on",
+  });
+  revalidatePath("/studio/products");
+}
+
+export async function captureEvidenceAction(form: FormData) {
+  const actor = await requireStudioActor();
+  const kind = String(form.get("kind") ?? "user_experience");
+  await commands.captureEvidence(actor, {
+    kind,
+    sourceId: String(form.get("sourceId") ?? ""),
+    productIds: [String(form.get("productId") ?? "")],
+    publicParaphrase: String(form.get("publicParaphrase") ?? ""),
+    sourceContext: String(form.get("sourceContext") ?? "") || null,
+    themes: String(form.get("themes") ?? "").split(",").map((item) => item.trim()).filter(Boolean),
+    ...(kind === "user_experience" ? {
+      experienceType: String(form.get("experienceType") ?? "unknown"),
+      environment: String(form.get("environment") ?? "unknown"),
+    } : {}),
+  });
+  revalidatePath("/studio/evidence");
+}
+
+export async function retainEvidenceAction(form: FormData) {
+  const actor = await requireStudioActor();
+  await commands.retainEvidence(actor, String(form.get("evidenceId") ?? ""));
+  revalidatePath("/studio/evidence");
+}
+
+export async function rejectEvidenceAction(form: FormData) {
+  const actor = await requireStudioActor();
+  await commands.rejectEvidence(actor, String(form.get("evidenceId") ?? ""));
+  revalidatePath("/studio/evidence");
+}
