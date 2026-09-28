@@ -31,6 +31,20 @@ export async function createProductAction(form: FormData) {
   revalidatePath("/studio/products");
 }
 
+export async function createVendorFactAction(form: FormData) {
+  const actor = await requireStudioActor();
+  const validFrom = String(form.get("validFrom") ?? "").trim();
+  await commands.createVendorFact(actor, {
+    productId: String(form.get("productId") ?? ""),
+    key: String(form.get("key") ?? ""),
+    value: String(form.get("value") ?? ""),
+    sourceId: String(form.get("sourceId") ?? ""),
+    verifiedAt: String(form.get("verifiedAt") ?? ""),
+    ...(validFrom ? { validFrom } : {}),
+  });
+  revalidatePath("/studio/research");
+}
+
 export async function captureEvidenceAction(form: FormData) {
   const actor = await requireStudioActor();
   const kind = String(form.get("kind") ?? "user_experience");
