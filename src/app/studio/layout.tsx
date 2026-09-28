@@ -1,9 +1,9 @@
-import Link from "next/link";
+import type { Metadata } from "next";\nimport Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireStudioActor } from "@/lib/studio-session";
 import { StudioSignOut } from "@/components/studio/sign-out";
 
-const navigation = [
+export const metadata: Metadata = { robots: { index: false, follow: false } };\n\nconst navigation = [
   ["Overview", "/studio"],
   ["Research", "/studio/research"],
   ["Evidence", "/studio/evidence"],
