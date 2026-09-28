@@ -21,6 +21,18 @@ export class EditorialService {
     return this.repo.corroborateFinding(findingId);
   }
 
+  submitForReview(articleId: string) {
+    return this.repo.transitionArticle(articleId, "review");
+  }
+
+  returnToDraft(articleId: string) {
+    return this.repo.transitionArticle(articleId, "draft");
+  }
+
+  archiveArticle(articleId: string) {
+    return this.repo.transitionArticle(articleId, "archived");
+  }
+
   publishRevision(articleId: string, revisionId: string) {
     return this.repo.publishRevision(articleId, revisionId);
   }
