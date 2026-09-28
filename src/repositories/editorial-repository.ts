@@ -1,4 +1,4 @@
-import { and, asc, eq, max, sql } from "drizzle-orm";
+import { and, asc, count, eq, max, sql } from "drizzle-orm";
 import type { ActualsDb } from "@/db";
 import {
   articleBlocks, articleEvidence, articleFindings, articleRevisions, articles,
