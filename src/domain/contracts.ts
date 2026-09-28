@@ -50,6 +50,8 @@ export const articleRevisionInput = z.object({
   seoTitle: z.string().max(70).nullable().optional(),
   seoDescription: z.string().max(180).nullable().optional(),
   changeNote: z.string().max(500).nullable().optional(),
+  lastResearchedAt: z.coerce.date().nullable().optional(),
+  factsVerifiedAt: z.coerce.date().nullable().optional(),
   blocks: z.array(articleBlockInput).default([]),
 });
 
