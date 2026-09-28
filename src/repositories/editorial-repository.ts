@@ -174,6 +174,18 @@ export class EditorialRepository {
       .limit(limit);
   }
 
+  async getAuthorPublication(slug: string) {
+    const [author] = await this.db.select().from(authors).where(eq(authors.slug, slug)).limit(1);
+    if (!author) return null;
+    const items = await this.db.select({
+      id: articles.id, slug: articles.slug, kind: articles.kind, publishedAt: articles.publishedAt,
+      title: articleRevisions.title, dek: articleRevisions.dek,
+    }).from(articles).innerJoin(articleRevisions, eq(articleRevisions.id, articles.publishedRevisionId))
+      .where(and(eq(articles.status, "published"), eq(articles.authorId, author.id)))
+      .orderBy(desc(articles.publishedAt));
+    return { author, articles: items };
+  }
+
   async searchPublishedArticles(query: string, limit = 20) {
     const term = `%${query.trim()}%`;
     if (!query.trim()) return [];
