@@ -78,7 +78,12 @@ export async function createArticleAction(form: FormData) {
 export async function addRevisionAction(form: FormData) {
   const actor = await requireStudioActor();
   const articleId = String(form.get("articleId") ?? "");
-  const markdown = String(form.get("markdown") ?? "").trim();
+  let blocks: unknown[] = [];
+  try {
+    blocks = JSON.parse(String(form.get("blocksJson") ?? "[]"));
+  } catch {
+    throw new Error("Invalid block payload");
+  }
   await commands.addRevision(actor, articleId, {
     title: String(form.get("title") ?? ""),
     dek: String(form.get("dek") ?? "") || null,
