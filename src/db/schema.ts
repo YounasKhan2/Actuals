@@ -25,6 +25,7 @@ export const evidenceKind = pgEnum("evidence_kind", [
 ]);
 export const evidenceStatus = pgEnum("evidence_status", ["candidate", "retained", "rejected", "superseded"]);
 export const findingStatus = pgEnum("finding_status", ["draft", "corroborated", "contested", "superseded"]);
+export const findingEvidenceRelationship = pgEnum("finding_evidence_relationship", ["supports", "contradicts", "context"]);
 export const experienceType = pgEnum("experience_type", ["first_hand", "second_hand", "opinion", "unknown"]);
 export const environmentType = pgEnum("environment_type", ["production", "hobby", "evaluation", "unknown"]);
 export const blockType = pgEnum("block_type", [
@@ -117,7 +118,7 @@ export const findings = pgTable("findings", {
 export const findingEvidence = pgTable("finding_evidence", {
   findingId: uuid("finding_id").notNull().references(() => findings.id, { onDelete: "cascade" }),
   evidenceId: uuid("evidence_id").notNull().references(() => evidence.id, { onDelete: "restrict" }),
-  relationship: text("relationship").notNull(),
+  relationship: findingEvidenceRelationship("relationship").notNull(),
 }, (t) => [primaryKey({ columns: [t.findingId, t.evidenceId] })]);
 
 export const vendorFacts = pgTable("vendor_facts", {
