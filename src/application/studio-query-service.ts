@@ -1,6 +1,6 @@
 import { count, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { articles, evidence, findings, products, sources } from "@/db/schema";
+import { articleBlocks, articleRevisions, articles, evidence, findings, products, sources } from "@/db/schema";
 
 export class StudioQueryService {
   private readonly db = getDb();
