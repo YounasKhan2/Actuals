@@ -11,7 +11,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.5",
