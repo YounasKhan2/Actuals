@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, inArray, max, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, max, or, sql } from "drizzle-orm";
 import type { ActualsDb } from "@/db";
 import {
   articleBlocks, articleRevisions, articles, evidence, evidenceProducts, evidenceThemes,
@@ -172,6 +172,18 @@ export class EditorialRepository {
       .where(eq(articles.status, "published"))
       .orderBy(desc(articles.publishedAt))
       .limit(limit);
+  }
+
+  async searchPublishedArticles(query: string, limit = 20) {
+    const term = `%${query.trim()}%`;
+    if (!query.trim()) return [];
+    return this.db.select({
+      id: articles.id, slug: articles.slug, kind: articles.kind, publishedAt: articles.publishedAt,
+      title: articleRevisions.title, dek: articleRevisions.dek,
+    }).from(articles)
+      .innerJoin(articleRevisions, eq(articleRevisions.id, articles.publishedRevisionId))
+      .where(and(eq(articles.status, "published"), or(ilike(articleRevisions.title, term), ilike(articleRevisions.dek, term))))
+      .orderBy(desc(articles.publishedAt)).limit(limit);
   }
 
   async getPublishedArticle(slug: string) {
