@@ -75,6 +75,18 @@ export class EditorialRepository {
     });
   }
 
+  async transitionArticle(articleId: string, to: "draft" | "review" | "archived") {
+    return this.db.transaction(async (tx) => {
+      const [article] = await tx.select().from(articles).where(eq(articles.id, articleId)).limit(1);
+      if (!article) throw new Error("Article not found");
+      const { assertArticleTransition } = await import("@/domain/article-lifecycle");
+      assertArticleTransition(article.status, to);
+      const [updated] = await tx.update(articles).set({ status: to, updatedAt: new Date() })
+        .where(eq(articles.id, articleId)).returning();
+      return updated;
+    });
+  }
+
   async publishRevision(articleId: string, revisionId: string) {
     return this.db.transaction(async (tx) => {
       const [article] = await tx.select().from(articles).where(eq(articles.id, articleId)).limit(1);
