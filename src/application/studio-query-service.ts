@@ -1,6 +1,6 @@
 import { count, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { articleBlocks, articleRevisions, articles, evidence, findings, products, sources, vendorFacts } from "@/db/schema";
+import { articleBlocks, articleRevisions, articles, authors, evidence, findings, products, sources, vendorFacts } from "@/db/schema";
 
 export class StudioQueryService {
   private readonly db = getDb();
@@ -25,6 +25,10 @@ export class StudioQueryService {
 
   listSources() {
     return this.db.select().from(sources).orderBy(desc(sources.retrievedAt)).limit(100);
+  }
+
+  listAuthors() {
+    return this.db.select().from(authors).orderBy(authors.name).limit(100);
   }
 
   listProducts() {
