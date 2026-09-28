@@ -1,6 +1,6 @@
 import { count, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { articleBlocks, articleRevisions, articles, evidence, findings, products, sources } from "@/db/schema";
+import { articleBlocks, articleRevisions, articles, evidence, findings, products, sources, vendorFacts } from "@/db/schema";
 
 export class StudioQueryService {
   private readonly db = getDb();
@@ -73,6 +73,14 @@ export class StudioQueryService {
     const latest = revisions[0];
     const blocks = latest ? await this.db.select().from(articleBlocks)
       .where(eq(articleBlocks.revisionId, latest.id)).orderBy(articleBlocks.position) : [];
-    return { article, revisions, latest, blocks };
+    const [evidenceOptions, findingOptions, factOptions] = await Promise.all([
+      this.db.select({ id: evidence.id, label: evidence.publicParaphrase, status: evidence.status }).from(evidence)
+        .where(eq(evidence.status, "retained")).orderBy(desc(evidence.updatedAt)).limit(100),
+      this.db.select({ id: findings.id, label: findings.title, status: findings.status }).from(findings)
+        .where(eq(findings.status, "corroborated")).orderBy(desc(findings.updatedAt)).limit(100),
+      this.db.select({ id: vendorFacts.id, key: vendorFacts.key, value: vendorFacts.value, verifiedAt: vendorFacts.verifiedAt }).from(vendorFacts)
+        .orderBy(desc(vendorFacts.verifiedAt)).limit(100),
+    ]);
+    return { article, revisions, latest, blocks, researchOptions: { evidence: evidenceOptions, findings: findingOptions, facts: factOptions } };
   }
 }
