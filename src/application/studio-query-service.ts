@@ -43,6 +43,28 @@ export class StudioQueryService {
     return this.db.select().from(articles).orderBy(desc(articles.updatedAt)).limit(100);
   }
 
+  listRecentRevisions() {
+    return this.db.select().from(articleRevisions)
+      .orderBy(desc(articleRevisions.createdAt))
+      .limit(100);
+  }
+
+  listSeoRevisions() {
+    return this.db.select({
+      articleId: articles.id,
+      slug: articles.slug,
+      kind: articles.kind,
+      status: articles.status,
+      revisionNumber: articleRevisions.revisionNumber,
+      title: articleRevisions.title,
+      seoTitle: articleRevisions.seoTitle,
+      seoDescription: articleRevisions.seoDescription,
+    }).from(articleRevisions)
+      .innerJoin(articles, eq(articles.id, articleRevisions.articleId))
+      .orderBy(desc(articleRevisions.createdAt))
+      .limit(100);
+  }
+
   async articleWorkspace(articleId: string) {
     const [article] = await this.db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
     if (!article) return null;
