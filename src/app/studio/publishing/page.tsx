@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { StudioQueryService } from "@/application/studio-query-service";
+export default async function PublishingPage(){const items=await new StudioQueryService().listArticles();return <><header className="studio-header"><p className="eyebrow">Release desk</p><h1>Publishing</h1><p>Only reviewed, non-empty revisions can become the pinned public revision.</p></header><div className="studio-list">{items.map(a=><Link className="studio-list-link" href={"/studio/articles/"+a.id} key={a.id}><article><div><strong>{a.slug}</strong><p>{a.kind}</p></div><div><span>{a.status}</span><small>{a.publishedRevisionId?"public revision pinned":"not public"}</small></div></article></Link>)}</div></>}
