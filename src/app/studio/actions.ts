@@ -19,6 +19,18 @@ export async function createSourceAction(form: FormData) {
   revalidatePath("/studio/sources");
 }
 
+export async function createAuthorAction(form: FormData) {
+  const actor = await requireStudioActor();
+  await commands.createAuthor(actor, {
+    slug: String(form.get("slug") ?? ""),
+    name: String(form.get("name") ?? ""),
+    bio: String(form.get("bio") ?? "") || null,
+    websiteUrl: String(form.get("websiteUrl") ?? "") || null,
+    avatarUrl: String(form.get("avatarUrl") ?? "") || null,
+  });
+  revalidatePath("/studio/authors");
+}
+
 export async function createProductAction(form: FormData) {
   const actor = await requireStudioActor();
   await commands.createProduct(actor, {
@@ -80,6 +92,7 @@ export async function createArticleAction(form: FormData) {
   await commands.createArticle(actor, {
     slug: String(form.get("slug") ?? ""),
     kind: String(form.get("kind") ?? "overview"),
+    authorId: String(form.get("authorId") ?? "") || null,
     revision: {
       title: String(form.get("title") ?? ""),
       dek: String(form.get("dek") ?? "") || null,
