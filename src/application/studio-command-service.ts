@@ -48,6 +48,11 @@ export class StudioCommandService {
     return this.research.createProduct(input);
   }
 
+  createVendorFact(actor: StudioActor, input: unknown) {
+    assertCan(actor.role, "research:write");
+    return this.research.createVendorFact(input);
+  }
+
   captureEvidence(actor: StudioActor, input: unknown) {
     assertCan(actor.role, "research:write");
     return this.editorial.captureEvidence(input);
