@@ -1,0 +1,11 @@
+import type { CreateArticleInput, EvidenceInput } from "./contracts";
+import { assertArticleTransition, type ArticleStatus } from "./article-lifecycle";
+export type ArticleRevisionRecord={id:string;articleId:string;revisionNumber:number;title:string};
+export const nextRevisionNumber=(xs:readonly ArticleRevisionRecord[])=>xs.reduce((m,r)=>Math.max(m,r.revisionNumber),0)+1;
+export function prepareArticle(input:CreateArticleInput){return{article:{slug:input.slug,kind:input.kind,status:"draft" as const},revision:{revisionNumber:1,...input.revision}}}
+export function prepareNextRevision(articleId:string,xs:readonly ArticleRevisionRecord[],revision:CreateArticleInput["revision"]){return{articleId,revisionNumber:nextRevisionNumber(xs),...revision}}
+export function prepareEvidence(input:EvidenceInput){if(input.kind!=="user_experience"&&(input.experienceType||input.environment))throw new Error("Experience metadata is only valid for user experience evidence");return{evidence:{kind:input.kind,status:"candidate" as const,sourceId:input.sourceId,publicParaphrase:input.publicParaphrase,originalExcerpt:input.originalExcerpt??null,sourceContext:input.sourceContext??null,experienceType:input.experienceType??null,environment:input.environment??null},productIds:[...new Set(input.productIds)],themes:[...new Set(input.themes.map(t=>t.trim()).filter(Boolean))]}}
+export type FindingEvidenceInput={evidenceId:string;sourceId:string;relationship:"supports"|"contradicts"|"context";status:"retained"|"candidate"|"rejected"|"superseded"};
+export function canCorroborateFinding(xs:readonly FindingEvidenceInput[]){return new Set(xs.filter(x=>x.status==="retained"&&x.relationship==="supports").map(x=>x.sourceId)).size>=2}
+export function assertCanCorroborateFinding(xs:readonly FindingEvidenceInput[]){if(!canCorroborateFinding(xs))throw new Error("A corroborated finding requires retained support from at least two independent sources")}
+export function preparePublish(status:ArticleStatus,revision:ArticleRevisionRecord|undefined,publishedAt=new Date()){assertArticleTransition(status,"published");if(!revision)throw new Error("Cannot publish an article without a concrete revision");return{status:"published" as const,publishedRevisionId:revision.id,publishedAt}}
