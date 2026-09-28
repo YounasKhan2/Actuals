@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireStudioActor } from "@/lib/studio-session";
+import { StudioSignOut } from "@/components/studio/sign-out";
 
 const navigation = [
   ["Overview", "/studio"],
@@ -27,7 +28,7 @@ export default async function StudioLayout({ children }: Readonly<{ children: Re
       <aside className="studio-sidebar">
         <div><Link className="studio-brand" href="/studio">Actuals <span>Studio</span></Link><p>{actor.email}</p></div>
         <nav>{navigation.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}</nav>
-        <small>{actor.role}</small>
+        <div className="studio-sidebar-foot"><small>{actor.role}</small><StudioSignOut /></div>
       </aside>
       <main className="studio-main">{children}</main>
     </div>
