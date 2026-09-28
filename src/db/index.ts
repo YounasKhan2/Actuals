@@ -1,19 +1,18 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { getServerEnv } from "@/lib/env";
 import * as publicationSchema from "./schema";
 import * as authSchema from "./auth-schema";
 
 const schema = { ...publicationSchema, ...authSchema };
-import { getServerEnv } from "@/lib/env";
 
 let client: ReturnType<typeof postgres> | undefined;
-let database: ReturnType<typeof drizzle<typeof schema>> | undefined;
+let database: ReturnType<typeof drizzle> | undefined;
 
 export function getDb() {
   if (database) return database;
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL is required to access the database");
-  client = postgres(url, { max: 10, prepare: false });
+  const { DATABASE_URL } = getServerEnv();
+  client = postgres(DATABASE_URL, { max: 10, prepare: false });
   database = drizzle(client, { schema });
   return database;
 }
