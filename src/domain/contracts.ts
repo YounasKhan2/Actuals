@@ -29,19 +29,33 @@ const referenceBlock = z.object({
   payload: z.object({ id: z.string().uuid() }),
 });
 
-const structuredBlock = z.object({
-  type: z.enum([
-    "image", "quote", "comparison", "table", "code", "timeline", "pros_cons",
-    "product_snapshot", "alternatives", "source_note", "callout",
-  ]),
-  payload: z.record(z.string(), z.unknown()),
-});
+const quoteBlock = z.object({ type: z.literal("quote"), payload: z.object({ text: z.string().min(1), attribution: z.string().max(200).optional() }) });
+const codeBlock = z.object({ type: z.literal("code"), payload: z.object({ code: z.string().min(1), language: z.string().max(40).default("text") }) });
+const calloutBlock = z.object({ type: z.literal("callout"), payload: z.object({ title: z.string().max(160).optional(), body: z.string().min(1) }) });
+const sourceNoteBlock = z.object({ type: z.literal("source_note"), payload: z.object({ body: z.string().min(1) }) });
+const imageBlock = z.object({ type: z.literal("image"), payload: z.object({ src: z.string().url(), alt: z.string().min(1).max(240), caption: z.string().max(500).optional() }) });
+const prosConsBlock = z.object({ type: z.literal("pros_cons"), payload: z.object({ pros: z.array(z.string().min(1)).min(1), cons: z.array(z.string().min(1)).min(1) }) });
+const tableBlock = z.object({ type: z.literal("table"), payload: z.object({ headers: z.array(z.string().min(1)).min(2), rows: z.array(z.array(z.string())).min(1) }) });
+const timelineBlock = z.object({ type: z.literal("timeline"), payload: z.object({ items: z.array(z.object({ label: z.string().min(1), detail: z.string().min(1) })).min(1) }) });
+const comparisonBlock = z.object({ type: z.literal("comparison"), payload: z.object({ left: z.string().min(1), right: z.string().min(1), rows: z.array(z.object({ criterion: z.string().min(1), left: z.string(), right: z.string() })).min(1) }) });
+const productSnapshotBlock = z.object({ type: z.literal("product_snapshot"), payload: z.object({ name: z.string().min(1), summary: z.string().min(1), url: z.string().url().optional() }) });
+const alternativesBlock = z.object({ type: z.literal("alternatives"), payload: z.object({ items: z.array(z.object({ name: z.string().min(1), note: z.string().min(1), url: z.string().url().optional() })).min(1) }) });
 
 export const articleBlockInput = z.discriminatedUnion("type", [
   proseBlock,
   headingBlock,
   referenceBlock,
-  structuredBlock,
+  quoteBlock,
+  codeBlock,
+  calloutBlock,
+  sourceNoteBlock,
+  imageBlock,
+  prosConsBlock,
+  tableBlock,
+  timelineBlock,
+  comparisonBlock,
+  productSnapshotBlock,
+  alternativesBlock,
 ]);
 
 export const articleRevisionInput = z.object({
