@@ -43,6 +43,11 @@ export class StudioCommandService {
     return this.research.upsertSource(input);
   }
 
+  createAuthor(actor: StudioActor, input: unknown) {
+    assertCan(actor.role, "studio:manage");
+    return this.research.createAuthor(input);
+  }
+
   createProduct(actor: StudioActor, input: unknown) {
     assertCan(actor.role, "research:write");
     return this.research.createProduct(input);
