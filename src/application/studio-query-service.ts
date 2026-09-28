@@ -16,15 +16,41 @@ export class StudioQueryService {
         this.db.select({ value: count() }).from(findings),
         this.db.select({ value: count() }).from(products),
       ]);
-
     return {
-      articles: articleCount.value,
-      drafts: draftCount.value,
-      sources: sourceCount.value,
-      evidence: evidenceCount.value,
-      candidateEvidence: candidateCount.value,
-      findings: findingCount.value,
-      products: productCount.value,
+      articles: articleCount.value, drafts: draftCount.value, sources: sourceCount.value,
+      evidence: evidenceCount.value, candidateEvidence: candidateCount.value,
+      findings: findingCount.value, products: productCount.value,
     };
+  }
+
+  listSources() {
+    return this.db.select().from(sources).orderBy(desc(sources.retrievedAt)).limit(100);
+  }
+
+  listProducts() {
+    return this.db.select().from(products).orderBy(products.name).limit(100);
+  }
+
+  listEvidence() {
+    return this.db.select().from(evidence).orderBy(desc(evidence.collectedAt)).limit(100);
+  }
+
+  listFindings() {
+    return this.db.select().from(findings).orderBy(desc(findings.updatedAt)).limit(100);
+  }
+
+  listArticles() {
+    return this.db.select().from(articles).orderBy(desc(articles.updatedAt)).limit(100);
+  }
+
+  async articleWorkspace(articleId: string) {
+    const [article] = await this.db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
+    if (!article) return null;
+    const revisions = await this.db.select().from(articleRevisions)
+      .where(eq(articleRevisions.articleId, articleId)).orderBy(desc(articleRevisions.revisionNumber));
+    const latest = revisions[0];
+    const blocks = latest ? await this.db.select().from(articleBlocks)
+      .where(eq(articleBlocks.revisionId, latest.id)).orderBy(articleBlocks.position) : [];
+    return { article, revisions, latest, blocks };
   }
 }
