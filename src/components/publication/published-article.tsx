@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PublicationBlocks } from "@/components/publication/blocks";
-import { loadPublishedArticle } from "@/publication/load-published-article";\nimport { articlePath } from "@/publication/routes";
+import { loadPublishedArticle } from "@/publication/load-published-article";
+import { articlePath } from "@/publication/routes";
 
 export async function publishedMetadata(slug: string, kind: string): Promise<Metadata> {
   const result = await loadPublishedArticle(slug, kind);
   if (!result) return {};
+  const description = result.revision.seoDescription ?? result.revision.dek ?? undefined;
   return {
     title: result.revision.seoTitle ?? result.revision.title,
-    description: result.revision.seoDescription ?? result.revision.dek ?? undefined,
+    description,
+    alternates: { canonical: articlePath(result.article.kind, result.article.slug) },
+    openGraph: { type: "article", title: result.revision.title, description },
   };
 }
 
