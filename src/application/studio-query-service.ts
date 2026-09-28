@@ -35,6 +35,10 @@ export class StudioQueryService {
     return this.db.select().from(evidence).orderBy(desc(evidence.collectedAt)).limit(100);
   }
 
+  listVendorFacts() {
+    return this.db.select().from(vendorFacts).orderBy(desc(vendorFacts.verifiedAt)).limit(100);
+  }
+
   listFindings() {
     return this.db.select().from(findings).orderBy(desc(findings.updatedAt)).limit(100);
   }
