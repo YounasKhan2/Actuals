@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import type { ActualsDb } from "@/db";
-import { evidence, findingEvidence, findings, products, sources } from "@/db/schema";
-import type { FindingInput, ProductInput, SourceInput } from "@/domain/contracts";
+import { evidence, findingEvidence, findings, products, sources, vendorFacts } from "@/db/schema";
+import type { FindingInput, ProductInput, SourceInput, VendorFactInput } from "@/domain/contracts";
 
 export class ResearchRepository {
   constructor(private readonly db: ActualsDb) {}
@@ -28,6 +28,18 @@ export class ResearchRepository {
 
   async createProduct(input: ProductInput) {
     const [row] = await this.db.insert(products).values(input).returning();
+    return row;
+  }
+
+  async createVendorFact(input: VendorFactInput) {
+    const [row] = await this.db.insert(vendorFacts).values({
+      productId: input.productId,
+      key: input.key,
+      value: input.value,
+      sourceId: input.sourceId,
+      verifiedAt: input.verifiedAt,
+      validFrom: input.validFrom ?? null,
+    }).returning();
     return row;
   }
 
