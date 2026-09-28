@@ -74,3 +74,33 @@ export const evidenceInput = z.object({
 export type CreateArticleInput = z.infer<typeof createArticleInput>;
 export type ArticleBlockInput = z.infer<typeof articleBlockInput>;
 export type EvidenceInput = z.infer<typeof evidenceInput>;
+
+export const sourceInput = z.object({
+  url: z.string().url(),
+  publisher: z.string().min(1).max(160).nullable().optional(),
+  type: z.enum(["official_docs","pricing","changelog","status","repository","reddit","hacker_news","github_issue","github_discussion","forum","review_site","other"]),
+  publishedAt: z.coerce.date().nullable().optional(),
+  lastVerifiedAt: z.coerce.date().nullable().optional(),
+});
+
+export const productInput = z.object({
+  slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  name: z.string().min(1).max(120),
+  websiteUrl: z.string().url().nullable().optional(),
+  description: z.string().max(1000).nullable().optional(),
+  isOpenSource: z.boolean().default(false),
+});
+
+export const findingInput = z.object({
+  title: z.string().min(3).max(180),
+  summary: z.string().min(3).max(2000),
+  editorialNotes: z.string().max(4000).nullable().optional(),
+  evidence: z.array(z.object({
+    evidenceId: z.string().uuid(),
+    relationship: z.enum(["supports","contradicts","context"]),
+  })).min(1),
+});
+
+export type SourceInput = z.infer<typeof sourceInput>;
+export type ProductInput = z.infer<typeof productInput>;
+export type FindingInput = z.infer<typeof findingInput>;
