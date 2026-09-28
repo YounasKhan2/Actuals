@@ -7,14 +7,19 @@ export default async function ArticleWorkspacePage({ params }: { params: Promise
   const { id } = await params;
   const workspace = await new StudioQueryService().articleWorkspace(id);
   if (!workspace) notFound();
-  const { article, revisions, latest, blocks } = workspace;
+  const { article, revisions, latest, blocks, researchOptions } = workspace;
+  const composerOptions = {
+    evidence: researchOptions.evidence.map((item) => ({ id: item.id, label: item.label })),
+    findings: researchOptions.findings.map((item) => ({ id: item.id, label: item.label })),
+    facts: researchOptions.facts.map((item) => ({ id: item.id, label: `${item.key}: ${JSON.stringify(item.value)}` })),
+  };
   return <><header className="studio-header"><p className="eyebrow">{article.kind} · {article.status}</p><h1>{latest?.title ?? article.slug}</h1><p>{latest?.dek ?? "No deck yet."}</p></header>
     <div className="studio-workspace-meta"><span>{revisions.length} revision{revisions.length===1?"":"s"}</span><span>{blocks.length} block{blocks.length===1?"":"s"} in latest</span><span>{article.publishedRevisionId ? "published revision pinned" : "not published"}</span></div>
     <form className="studio-form studio-editor" action={addRevisionAction}>
       <input type="hidden" name="articleId" value={article.id} />
       <input name="title" defaultValue={latest?.title ?? ""} placeholder="Title" required />
       <input name="dek" defaultValue={latest?.dek ?? ""} placeholder="Deck" />
-      <BlockComposer />
+      <BlockComposer initialBlocks={blocks} researchOptions={composerOptions} />
       <input name="changeNote" placeholder="What changed in this revision?" />
       <button>Create new revision</button>
     </form>
