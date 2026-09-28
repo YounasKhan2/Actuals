@@ -105,4 +105,14 @@ export const findingInput = z.object({
 
 export type SourceInput = z.infer<typeof sourceInput>;
 export type ProductInput = z.infer<typeof productInput>;
+export const vendorFactInput = z.object({
+  productId: z.string().uuid(),
+  key: z.string().min(1).max(160),
+  value: z.string().min(1).max(2000),
+  sourceId: z.string().uuid(),
+  verifiedAt: z.coerce.date(),
+  validFrom: z.coerce.date().nullable().optional(),
+});
+
 export type FindingInput = z.infer<typeof findingInput>;
+export type VendorFactInput = z.infer<typeof vendorFactInput>;
