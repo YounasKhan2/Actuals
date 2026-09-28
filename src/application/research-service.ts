@@ -1,5 +1,5 @@
 import { getDb } from "@/db";
-import { findingInput, productInput, sourceInput } from "@/domain/contracts";
+import { findingInput, productInput, sourceInput, vendorFactInput } from "@/domain/contracts";
 import { ResearchRepository } from "@/repositories/research-repository";
 
 export class ResearchService {
@@ -11,6 +11,10 @@ export class ResearchService {
 
   createProduct(input: unknown) {
     return this.repo.createProduct(productInput.parse(input));
+  }
+
+  createVendorFact(input: unknown) {
+    return this.repo.createVendorFact(vendorFactInput.parse(input));
   }
 
   retainEvidence(evidenceId: string) {
