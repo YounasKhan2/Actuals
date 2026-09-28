@@ -132,10 +132,22 @@ export const vendorFacts = pgTable("vendor_facts", {
   supersededAt: timestamp("superseded_at", { withTimezone: true }),
 }, (t) => [index("vendor_facts_product_key_idx").on(t.productId, t.key)]);
 
+export const authors = pgTable("authors", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  slug: text("slug").notNull(),
+  name: text("name").notNull(),
+  bio: text("bio"),
+  websiteUrl: text("website_url"),
+  avatarUrl: text("avatar_url"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (t) => [uniqueIndex("authors_slug_uidx").on(t.slug)]);
+
 export const articles = pgTable("articles", {
   id: uuid("id").defaultRandom().primaryKey(),
   slug: text("slug").notNull(),
   kind: articleKind("kind").notNull(),
+  authorId: uuid("author_id").references(() => authors.id, { onDelete: "set null" }),
   status: articleStatus("status").default("draft").notNull(),
   publishedRevisionId: uuid("published_revision_id"),
   publishedAt: timestamp("published_at", { withTimezone: true }),
