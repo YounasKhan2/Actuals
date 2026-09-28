@@ -157,6 +157,21 @@ export class EditorialRepository {
     });
   }
 
+  async listPublishedArticles(limit = 12) {
+    return this.db.select({
+      id: articles.id,
+      slug: articles.slug,
+      kind: articles.kind,
+      publishedAt: articles.publishedAt,
+      title: articleRevisions.title,
+      dek: articleRevisions.dek,
+    }).from(articles)
+      .innerJoin(articleRevisions, eq(articleRevisions.id, articles.publishedRevisionId))
+      .where(eq(articles.status, "published"))
+      .orderBy(desc(articles.publishedAt))
+      .limit(limit);
+  }
+
   async getPublishedArticle(slug: string) {
     const [article] = await this.db.select().from(articles)
       .where(and(eq(articles.slug, slug), eq(articles.status, "published"))).limit(1);
