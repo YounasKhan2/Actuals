@@ -37,6 +37,10 @@ export class EditorialService {
     return this.repo.publishRevision(articleId, revisionId);
   }
 
+  listPublishedArticles(limit = 12) {
+    return this.repo.listPublishedArticles(limit);
+  }
+
   getPublishedArticle(slug: string) {
     return this.repo.getPublishedArticle(slug);
   }
