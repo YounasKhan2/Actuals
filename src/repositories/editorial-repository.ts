@@ -94,6 +94,7 @@ export class EditorialRepository {
         const [blockCount] = await tx.select({ value: count() }).from(articleBlocks)
           .where(eq(articleBlocks.revisionId, latest.id));
         if (blockCount.value < 1) throw new Error("Cannot review an empty revision");
+        await this.assertValidResearchReferences(tx, latest.id);
       }
 
       const [updated] = await tx.update(articles).set({ status: to, updatedAt: new Date() })
