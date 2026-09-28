@@ -1,7 +1,7 @@
 import { and, asc, count, desc, eq, ilike, inArray, max, or, sql } from "drizzle-orm";
 import type { ActualsDb } from "@/db";
 import {
-  articleBlocks, articleRevisions, articles, evidence, evidenceProducts, evidenceThemes,
+  articleBlocks, articleRevisions, articles, authors, evidence, evidenceProducts, evidenceThemes,
   findingEvidence, findings, sources, vendorFacts,
 } from "@/db/schema";
 import { assertArticleTransition } from "@/domain/article-lifecycle";
@@ -193,6 +193,7 @@ export class EditorialRepository {
     const [revision] = await this.db.select().from(articleRevisions)
       .where(eq(articleRevisions.id, article.publishedRevisionId)).limit(1);
     if (!revision) return null;
+    const [author] = article.authorId ? await this.db.select().from(authors).where(eq(authors.id, article.authorId)).limit(1) : [];
     const blocks = await this.db.select().from(articleBlocks)
       .where(eq(articleBlocks.revisionId, revision.id)).orderBy(asc(articleBlocks.position));
 
@@ -217,7 +218,7 @@ export class EditorialRepository {
     const sourceMap = Object.fromEntries(sourceRefs.map((item) => [item.id, item]));
 
     return {
-      article, revision, blocks,
+      article, revision, blocks, author: author ?? null,
       references: {
         evidence: Object.fromEntries(evidenceRefs.map((item) => [item.id, { ...item, source: sourceMap[item.sourceId] ?? null }])),
         finding: Object.fromEntries(findingRefs.map((item) => [item.id, item])),
