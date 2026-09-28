@@ -20,6 +20,7 @@ export class EditorialRepository {
         articleId: article.id, revisionNumber: 1, title: input.revision.title,
         dek: input.revision.dek ?? null, seoTitle: input.revision.seoTitle ?? null,
         seoDescription: input.revision.seoDescription ?? null, changeNote: input.revision.changeNote ?? null,
+        lastResearchedAt: input.revision.lastResearchedAt ?? null, factsVerifiedAt: input.revision.factsVerifiedAt ?? null,
       }).returning();
       if (input.revision.blocks.length) {
         await tx.insert(articleBlocks).values(input.revision.blocks.map((block, position) => ({
