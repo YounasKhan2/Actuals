@@ -26,6 +26,6 @@ export async function PublishedArticle({ slug, kind }: { slug: string; kind: str
         {result.revision.factsVerifiedAt ? <span>Facts verified {result.revision.factsVerifiedAt.toISOString().slice(0,10)}</span> : null}
       </div>
     </header>
-    <PublicationBlocks blocks={result.blocks} />
+    <PublicationBlocks blocks={result.blocks} references={result.references} />
   </article></main>;
 }
