@@ -72,6 +72,7 @@ export const articleRevisionInput = z.object({
 export const createArticleInput = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   kind: z.enum(articleKinds),
+  authorId: z.string().uuid().nullable().optional(),
   revision: articleRevisionInput,
 });
 
@@ -99,6 +100,14 @@ export const sourceInput = z.object({
   lastVerifiedAt: z.coerce.date().nullable().optional(),
 });
 
+export const authorInput = z.object({
+  slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  name: z.string().min(1).max(120),
+  bio: z.string().max(1200).nullable().optional(),
+  websiteUrl: z.string().url().nullable().optional(),
+  avatarUrl: z.string().url().nullable().optional(),
+});
+
 export const productInput = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   name: z.string().min(1).max(120),
@@ -119,6 +128,7 @@ export const findingInput = z.object({
 
 export type SourceInput = z.infer<typeof sourceInput>;
 export type ProductInput = z.infer<typeof productInput>;
+export type AuthorInput = z.infer<typeof authorInput>;
 export const vendorFactInput = z.object({
   productId: z.string().uuid(),
   key: z.string().min(1).max(160),
