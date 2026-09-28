@@ -1,6 +1,9 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema";
+import * as publicationSchema from "./schema";
+import * as authSchema from "./auth-schema";
+
+const schema = { ...publicationSchema, ...authSchema };
 import { getServerEnv } from "@/lib/env";
 
 let client: ReturnType<typeof postgres> | undefined;
