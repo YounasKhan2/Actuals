@@ -41,6 +41,8 @@ export class EditorialRepository {
         articleId, revisionNumber, title: input.title, dek: input.dek ?? null,
         seoTitle: input.seoTitle ?? null, seoDescription: input.seoDescription ?? null,
         changeNote: input.changeNote ?? null,
+        lastResearchedAt: input.lastResearchedAt ?? null,
+        factsVerifiedAt: input.factsVerifiedAt ?? null,
       }).returning();
       if (input.blocks.length) {
         await tx.insert(articleBlocks).values(input.blocks.map((block, position) => ({
