@@ -88,6 +88,10 @@ export async function addRevisionAction(form: FormData) {
     title: String(form.get("title") ?? ""),
     dek: String(form.get("dek") ?? "") || null,
     changeNote: String(form.get("changeNote") ?? "") || null,
+    seoTitle: String(form.get("seoTitle") ?? "") || null,
+    seoDescription: String(form.get("seoDescription") ?? "") || null,
+    lastResearchedAt: String(form.get("lastResearchedAt") ?? "") || null,
+    factsVerifiedAt: String(form.get("factsVerifiedAt") ?? "") || null,
     blocks,
   });
   revalidatePath(`/studio/articles/${articleId}`);
