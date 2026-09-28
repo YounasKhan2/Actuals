@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { VerifiedFacts } from "@/components/research/verified-facts";
+import { comparisonResearch } from "@/content/comparisons/railway-vs-render";
 import { siteConfig } from "@/lib/site";
 
 const title = "Railway vs Render";
-const description = "A source-backed comparison of Railway and Render. Research page scaffold — production findings will be added only after evidence review.";
+const description = "Railway and Render compared using current official facts and, as research is completed, traceable user experiences.";
 
 export const metadata: Metadata = {
   title,
@@ -20,28 +22,68 @@ export default function RailwayVsRenderPage() {
     author: { "@type": "Organization", name: "Actuals" },
     publisher: { "@type": "Organization", name: "Actuals" },
     mainEntityOfPage: `${siteConfig.url}/compare/railway-vs-render`,
+    dateModified: comparisonResearch.researchedAt,
   };
+
+  const railwayFacts = comparisonResearch.facts.filter((fact) => fact.product === "railway");
+  const renderFacts = comparisonResearch.facts.filter((fact) => fact.product === "render");
 
   return (
     <main>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <article className="shell" style={{ padding: "72px 0 120px" }}>
-        <p className="eyebrow">Comparison · Research scaffold</p>
-        <h1 style={{ fontSize: "clamp(52px, 8vw, 92px)", lineHeight: .96, letterSpacing: "-.06em", margin: "18px 0 24px" }}>
-          Railway <span style={{ color: "var(--muted)" }}>vs</span> Render
-        </h1>
-        <p style={{ maxWidth: 720, fontSize: 21, lineHeight: 1.55, color: "var(--muted)" }}>
-          Which platform fits which workload? This route intentionally contains no fabricated review counts, quotes, scores, or verdicts. Real findings will be published from the evidence corpus.
-        </p>
-        <section className="rule" style={{ marginTop: 64, paddingTop: 28 }}>
-          <p className="eyebrow">Evidence model</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12, marginTop: 20 }}>
-            {["Verified facts", "Vendor claims", "User experiences", "Corroborated findings"].map((item) => (
-              <div key={item} style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: "var(--radius-md)", padding: 22 }}>
-                <strong>{item}</strong>
-              </div>
-            ))}
+      <article className="comparison shell">
+        <header className="comparison-hero">
+          <p className="eyebrow">Developer platforms · Comparison</p>
+          <h1>Railway <span>vs</span> Render</h1>
+          <p className="lede">
+            Two developer platforms with different billing structures and operational trade-offs.
+            Actuals separates documented facts from vendor claims and user experiences.
+          </p>
+          <div className="research-meta">
+            <span>Last researched {comparisonResearch.researchedAt}</span>
+            <span>{comparisonResearch.facts.length} verified facts in the current corpus</span>
+            <span>User-experience research: in progress</span>
           </div>
+        </header>
+
+        <section className="quick-compare" aria-labelledby="quick-compare">
+          <div className="section-heading">
+            <p className="eyebrow">At a glance</p>
+            <h2 id="quick-compare">The documented baseline.</h2>
+          </div>
+          <div className="compare-table" role="table" aria-label="Railway and Render documented baseline">
+            <div className="compare-row compare-head" role="row">
+              <span role="columnheader">Question</span>
+              <strong role="columnheader">Railway</strong>
+              <strong role="columnheader">Render</strong>
+            </div>
+            <div className="compare-row" role="row">
+              <span role="cell">Entry workspace plan</span>
+              <span role="cell">$5/mo Hobby, applied toward usage</span>
+              <span role="cell">$0/mo Hobby + compute</span>
+            </div>
+            <div className="compare-row" role="row">
+              <span role="cell">Team / production plan</span>
+              <span role="cell">$20/mo Pro, applied toward usage</span>
+              <span role="cell">$25/mo Pro + compute</span>
+            </div>
+            <div className="compare-row" role="row">
+              <span role="cell">Documented regions</span>
+              <span role="cell">4</span>
+              <span role="cell">5</span>
+            </div>
+          </div>
+        </section>
+
+        <VerifiedFacts facts={[...railwayFacts, ...renderFacts]} />
+
+        <section className="research-pending">
+          <p className="eyebrow">Community evidence</p>
+          <h2>No invented consensus.</h2>
+          <p>
+            User-experience findings will appear here only after traceable sources are collected,
+            classified by context, and reviewed for repeated patterns and disagreement.
+          </p>
         </section>
       </article>
     </main>
