@@ -8,31 +8,16 @@ export const metadata: Metadata = {
   title: { default: "Actuals", template: "%s — Actuals" },
   description: siteConfig.description,
   alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    siteName: "Actuals",
-    title: "Actuals",
-    description: siteConfig.description,
-  },
+  openGraph: { type: "website", siteName: "Actuals", title: "Actuals", description: siteConfig.description },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html lang="en">
-      <body>
-        <header style={{ borderBottom: "1px solid var(--line)", background: "var(--paper)" }}>
-          <div className="shell" style={{ minHeight: 64, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
-            <Link href="/" style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-.04em" }}>actuals.</Link>
-            <nav aria-label="Primary" style={{ display: "flex", gap: 24, fontSize: 14 }}>
-              <Link href="/compare">Compare</Link>
-              <Link href="/reviews">Reviews</Link>
-              <Link href="/open-source">Open source</Link>
-              <Link href="/methodology">Methodology</Link>
-            </nav>
-          </div>
-        </header>
-        {children}
-      </body>
-    </html>
-  );
+export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){
+ return <html lang="en"><body>
+  <header className="site-header"><div className="shell site-header-inner">
+    <Link href="/" className="site-brand">actuals.</Link>
+    <nav aria-label="Primary"><Link href="/search">Search</Link><Link href="/guides">Guides</Link><Link href="/methodology">Methodology</Link><Link href="/about">About</Link></nav>
+  </div></header>
+  {children}
+  <footer className="site-footer"><div className="shell"><Link href="/" className="site-brand">actuals.</Link><p>Independent technology research backed by traceable sources.</p><nav><Link href="/methodology">Methodology</Link><Link href="/about">About</Link><Link href="/search">Search</Link></nav></div></footer>
+ </body></html>;
 }
