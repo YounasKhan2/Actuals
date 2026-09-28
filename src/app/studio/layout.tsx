@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 const navigation = [
   ["Overview", "/studio"], ["Research", "/studio/research"], ["Evidence", "/studio/evidence"],
-  ["Products", "/studio/products"], ["Articles", "/studio/articles"], ["Sources", "/studio/sources"],
+  ["Products", "/studio/products"], ["Authors", "/studio/authors"], ["Articles", "/studio/articles"], ["Sources", "/studio/sources"],
   ["Changes", "/studio/changes"], ["SEO", "/studio/seo"], ["Publishing", "/studio/publishing"],
 ] as const;
 
