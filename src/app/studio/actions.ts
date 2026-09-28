@@ -101,3 +101,25 @@ export async function publishArticleAction(form: FormData) {
   await commands.publishRevision(actor, articleId, String(form.get("revisionId") ?? ""));
   revalidatePath(`/studio/articles/${articleId}`);
 }
+
+export async function createFindingAction(form: FormData) {
+  const actor = await requireStudioActor();
+  const supports = form.getAll("supportingEvidenceId").map(String);
+  const contradicts = form.getAll("contradictingEvidenceId").map(String);
+  await commands.createFinding(actor, {
+    title: String(form.get("title") ?? ""),
+    summary: String(form.get("summary") ?? ""),
+    editorialNotes: String(form.get("editorialNotes") ?? "") || null,
+    evidence: [
+      ...supports.map((evidenceId) => ({ evidenceId, relationship: "supports" })),
+      ...contradicts.map((evidenceId) => ({ evidenceId, relationship: "contradicts" })),
+    ],
+  });
+  revalidatePath("/studio/research");
+}
+
+export async function corroborateFindingAction(form: FormData) {
+  const actor = await requireStudioActor();
+  await commands.corroborateFinding(actor, String(form.get("findingId") ?? ""));
+  revalidatePath("/studio/research");
+}
