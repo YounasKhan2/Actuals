@@ -14,7 +14,7 @@ export class EditorialRepository {
   async createArticle(input: CreateArticleInput) {
     return this.db.transaction(async (tx) => {
       const [article] = await tx.insert(articles).values({
-        slug: input.slug, kind: input.kind, status: "draft",
+        slug: input.slug, kind: input.kind, authorId: input.authorId ?? null, status: "draft",
       }).returning();
       const [revision] = await tx.insert(articleRevisions).values({
         articleId: article.id, revisionNumber: 1, title: input.revision.title,
