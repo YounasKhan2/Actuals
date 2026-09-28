@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { StudioQueryService } from "@/application/studio-query-service";
-import { addRevisionAction, publishArticleAction, submitArticleAction } from "../../actions";\nimport { BlockComposer } from "@/components/studio/block-composer";
+import { BlockComposer } from "@/components/studio/block-composer";
+import { addRevisionAction, publishArticleAction, submitArticleAction } from "../../actions";
 
 export default async function ArticleWorkspacePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
