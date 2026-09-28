@@ -1,3 +1,4 @@
+import Image from "next/image";
 type Block = { id: string; type: string; payload: unknown };
 type ReferenceMap = Record<string, Record<string, unknown>>;
 type References = { evidence: ReferenceMap; finding: ReferenceMap; verified_fact: ReferenceMap };
@@ -14,7 +15,7 @@ export function PublicationBlocks({blocks,references}:{blocks:Block[];references
   if(block.type==="code")return <pre key={block.id}><code>{text(data.code)}</code></pre>;
   if(block.type==="callout")return <aside className="publication-callout" key={block.id}>{text(data.title)?<strong>{text(data.title)}</strong>:null}<p>{text(data.body)}</p></aside>;
   if(block.type==="source_note")return <aside className="publication-source-note" key={block.id}><span>Source note</span><p>{text(data.body)}</p></aside>;
-  if(block.type==="image")return <figure key={block.id}><img className="publication-image" src={text(data.src)} alt={text(data.alt)}/>{text(data.caption)?<figcaption>{text(data.caption)}</figcaption>:null}</figure>;
+  if(block.type==="image")return <figure key={block.id}><Image className="publication-image" src={text(data.src)} alt={text(data.alt)} width={1200} height={675} sizes="(max-width: 760px) 100vw, 760px" unoptimized/>{text(data.caption)?<figcaption>{text(data.caption)}</figcaption>:null}</figure>;
   if(block.type==="pros_cons")return <section className="publication-pros-cons" key={block.id}><div><span>Pros</span><ul>{strings(data.pros).map((x,i)=><li key={i}>{x}</li>)}</ul></div><div><span>Cons</span><ul>{strings(data.cons).map((x,i)=><li key={i}>{x}</li>)}</ul></div></section>;
   if(block.type==="table"){const headers=strings(data.headers),rows=Array.isArray(data.rows)?data.rows:[];return <div className="publication-table-wrap" key={block.id}><table><thead><tr>{headers.map((h,i)=><th key={i}>{h}</th>)}</tr></thead><tbody>{rows.map((row,i)=><tr key={i}>{strings(row).map((cell,j)=><td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>;}
   if(block.type==="timeline"){const items=Array.isArray(data.items)?data.items:[];return <ol className="publication-timeline" key={block.id}>{items.map((raw,i)=>{const x=record(raw);return <li key={i}><strong>{text(x.label)}</strong><p>{text(x.detail)}</p></li>})}</ol>;}
