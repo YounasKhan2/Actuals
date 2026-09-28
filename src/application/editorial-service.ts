@@ -41,6 +41,10 @@ export class EditorialService {
     return this.repo.listPublishedArticles(limit);
   }
 
+  getAuthorPublication(slug: string) {
+    return this.repo.getAuthorPublication(slug);
+  }
+
   searchPublishedArticles(query: string, limit = 20) {
     return this.repo.searchPublishedArticles(query, limit);
   }
