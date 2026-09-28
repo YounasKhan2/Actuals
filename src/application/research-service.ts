@@ -1,5 +1,5 @@
 import { getDb } from "@/db";
-import { findingInput, productInput, sourceInput, vendorFactInput } from "@/domain/contracts";
+import { authorInput, findingInput, productInput, sourceInput, vendorFactInput } from "@/domain/contracts";
 import { ResearchRepository } from "@/repositories/research-repository";
 
 export class ResearchService {
@@ -7,6 +7,10 @@ export class ResearchService {
 
   upsertSource(input: unknown) {
     return this.repo.upsertSource(sourceInput.parse(input));
+  }
+
+  createAuthor(input: unknown) {
+    return this.repo.createAuthor(authorInput.parse(input));
   }
 
   createProduct(input: unknown) {
