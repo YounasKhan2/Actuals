@@ -21,7 +21,7 @@ export default async function HomePage() {
             <div><strong>{article.title}</strong>{article.dek ? <p>{article.dek}</p> : null}</div>
             <time>{article.publishedAt?.toISOString().slice(0,10)}</time>
           </Link>
-        )) : <div className="publication-empty"><strong>Research is being prepared.</strong><p>Published work will appear here after it completes Actuals' research, review, and publication workflow.</p></div>}
+        )) : <div className="publication-empty"><strong>Research is being prepared.</strong><p>Published work will appear here after it completes Actuals&apos; research, review, and publication workflow.</p></div>}
       </section>
     </main>
   );
