@@ -102,7 +102,7 @@ export class EditorialRepository {
     });
   }
 
-  private async assertValidResearchReferences(tx: ActualsDb, revisionId: string) {
+  private async assertValidResearchReferences(tx: Pick<ActualsDb, "select">, revisionId: string) {
     const blocks = await tx.select().from(articleBlocks).where(eq(articleBlocks.revisionId, revisionId));
     const ids = (type: string) => blocks.filter((block) => block.type === type).map((block) => {
       const payload = block.payload as Record<string, unknown>;
@@ -147,7 +147,7 @@ export class EditorialRepository {
       const [blockCount] = await tx.select({ value: count() }).from(articleBlocks)
         .where(eq(articleBlocks.revisionId, revisionId));
       if (blockCount.value < 1) throw new Error("Cannot publish an empty revision");
-      await this.assertValidResearchReferences(tx as ActualsDb, revisionId);
+      await this.assertValidResearchReferences(tx, revisionId);
 
       const publication = preparePublish(article.status, {
         id: revision.id, articleId: revision.articleId, revisionNumber: revision.revisionNumber, title: revision.title,
