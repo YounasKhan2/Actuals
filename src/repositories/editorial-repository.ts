@@ -101,6 +101,41 @@ export class EditorialRepository {
     });
   }
 
+  private async assertValidResearchReferences(tx: ActualsDb, revisionId: string) {
+    const blocks = await tx.select().from(articleBlocks).where(eq(articleBlocks.revisionId, revisionId));
+    const ids = (type: string) => blocks.filter((block) => block.type === type).map((block) => {
+      const payload = block.payload as Record<string, unknown>;
+      return typeof payload.id === "string" ? payload.id : "";
+    }).filter(Boolean);
+
+    const evidenceIds = ids("evidence");
+    if (evidenceIds.length) {
+      const valid = await tx.select({ id: evidence.id }).from(evidence)
+        .where(and(inArray(evidence.id, evidenceIds), eq(evidence.status, "retained")));
+      if (new Set(valid.map((item) => item.id)).size !== new Set(evidenceIds).size) {
+        throw new Error("Article contains evidence that is missing or not retained");
+      }
+    }
+
+    const findingIds = ids("finding");
+    if (findingIds.length) {
+      const valid = await tx.select({ id: findings.id }).from(findings)
+        .where(and(inArray(findings.id, findingIds), eq(findings.status, "corroborated")));
+      if (new Set(valid.map((item) => item.id)).size !== new Set(findingIds).size) {
+        throw new Error("Article contains findings that are missing or not corroborated");
+      }
+    }
+
+    const factIds = ids("verified_fact");
+    if (factIds.length) {
+      const valid = await tx.select({ id: vendorFacts.id }).from(vendorFacts)
+        .where(and(inArray(vendorFacts.id, factIds), sql`${vendorFacts.supersededAt} is null`));
+      if (new Set(valid.map((item) => item.id)).size !== new Set(factIds).size) {
+        throw new Error("Article contains facts that are missing or superseded");
+      }
+    }
+  }
+
   async publishRevision(articleId: string, revisionId: string) {
     return this.db.transaction(async (tx) => {
       const [article] = await tx.select().from(articles).where(eq(articles.id, articleId)).limit(1);
@@ -111,6 +146,7 @@ export class EditorialRepository {
       const [blockCount] = await tx.select({ value: count() }).from(articleBlocks)
         .where(eq(articleBlocks.revisionId, revisionId));
       if (blockCount.value < 1) throw new Error("Cannot publish an empty revision");
+      await this.assertValidResearchReferences(tx as ActualsDb, revisionId);
 
       const publication = preparePublish(article.status, {
         id: revision.id, articleId: revision.articleId, revisionNumber: revision.revisionNumber, title: revision.title,
